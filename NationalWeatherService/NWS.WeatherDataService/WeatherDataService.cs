@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using GeoCoordinatePortable;
 using NWS.WebClient;
 using NWS.Model;
+using System.Threading.Tasks;
 
 namespace NWS.WeatherDataService
 {
@@ -26,7 +27,7 @@ namespace NWS.WeatherDataService
             this.webClient = webClient;
         }
 
-        public CurrentConditionsResponse GetCurrentConditions(decimal lat, decimal lng)
+        public async Task<CurrentConditionsResponse> GetCurrentConditionsAsync(decimal lat, decimal lng)
         {
             var notStationIdList = new List<string>();
 
@@ -36,9 +37,9 @@ namespace NWS.WeatherDataService
 
             while (count < 5 && (response == null || !response.TemperatureCelsius.HasValue))
             {
-                var station = GetClosestWeatherStation(lat, lng, notStationIdList);
+                var station = await GetClosestWeatherStationAsync(lat, lng, notStationIdList);
 
-                response = GetCurrentConditionsForStation(station);
+                response = await GetCurrentConditionsForStationAsync(station);
 
                 if (response == null || !response.TemperatureCelsius.HasValue)
                 {
@@ -51,9 +52,9 @@ namespace NWS.WeatherDataService
             return response;
         }
 
-        public ForecastResponse GetForecast(decimal lat, decimal lng)
+        public async Task<ForecastResponse> GetForecastAsync(decimal lat, decimal lng)
         {
-            var binaryResponse = webClient.Get(string.Format("https://api.weather.gov/points/{0},{1}", lat.ToString("0.####"), lng.ToString("0.####")));
+            var binaryResponse = await webClient.GetAsync(string.Format("https://api.weather.gov/points/{0},{1}", lat.ToString("0.####"), lng.ToString("0.####")));
 
             var redirectResponseText = Encoding.Default.GetString(binaryResponse);
 
@@ -63,7 +64,7 @@ namespace NWS.WeatherDataService
 
             var forecastUrl = (string)json.properties.forecast;
 
-            binaryResponse = webClient.Get(forecastUrl);
+            binaryResponse = await webClient.GetAsync(forecastUrl);
 
             var forecastResponseText = Encoding.Default.GetString(binaryResponse);
 
@@ -99,11 +100,11 @@ namespace NWS.WeatherDataService
             return response;
         }
 
-        CurrentConditionsResponse GetCurrentConditionsForStation(WeatherStation station)
+        async Task<CurrentConditionsResponse> GetCurrentConditionsForStationAsync(WeatherStation station)
         {
             if (station != null)
             {
-                var binaryResponse = webClient.Get(string.Format("https://api.weather.gov/stations/{0}/observations/latest", station.StationIdentifier));
+                var binaryResponse = await webClient.GetAsync(string.Format("https://api.weather.gov/stations/{0}/observations/latest", station.StationIdentifier));
 
                 var observationsText = Encoding.Default.GetString(binaryResponse);
 
@@ -169,9 +170,9 @@ namespace NWS.WeatherDataService
             return null;
         }
 
-        internal WeatherStation GetClosestWeatherStation(decimal lat, decimal lng, List<string> notStationIdentifierList = null)
+        internal async Task<WeatherStation> GetClosestWeatherStationAsync(decimal lat, decimal lng, List<string> notStationIdentifierList = null)
         {
-            var stations = GetAllWeatherStations();
+            var stations = await GetAllWeatherStationsAsync();
 
             if (notStationIdentifierList != null && notStationIdentifierList.Count > 0)
             {
@@ -198,7 +199,7 @@ namespace NWS.WeatherDataService
             return closestStation;
         }
 
-        internal List<WeatherStation> GetAllWeatherStations()
+        internal async Task<List<WeatherStation>> GetAllWeatherStationsAsync()
         {
             var shortKey = "allweatherstations-short";
             var longKey = "allweatherstations-long";

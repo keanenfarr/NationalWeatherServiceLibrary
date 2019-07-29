@@ -1,41 +1,31 @@
 ﻿using System.Collections.Specialized;
 using System.Net;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace NWS.WebClient.Default
 {
     public class WebClient : IWebClient
     {
+        const string userAgent = "NWS Weather Library for DotNet - https://github.com/keanenfarr/NationalWeatherServiceLibrary";
+
         public byte[] Get(string url)
         {
-            byte[] buffer = new byte[4096];
-            byte[] requestBuffer = new byte[0];
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.AllowAutoRedirect = true;
-            request.Method = "GET";
-            request.UserAgent = "NWS Weather Library for DotNet - https://github.com/keanenfarr/NationalWeatherServiceLibrary";
-            request.Accept = "application/json";
-            request.ContentType = "application/json";
-            request.ContentLength = requestBuffer.Length;
-
-            using (var response = (HttpWebResponse)request.GetResponse())
+            using (var client = new System.Net.WebClient())
             {
-                using (var dataStream = response.GetResponseStream())
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        int count = 0;
-                        do
-                        {
-                            count = dataStream.Read(buffer, 0, buffer.Length);
-                            memoryStream.Write(buffer, 0, count);
+                client.Headers.Add("accept", "application/json");
+                client.Headers.Add("user-agent", userAgent);
+                return client.DownloadData(new System.Uri(url));
+            }
+        }
 
-                        } while (count != 0);
-
-                        return memoryStream.ToArray();
-                    }
-                }
+        public async Task<byte[]> GetAsync(string url)
+        {
+            using (var client = new System.Net.WebClient())
+            {
+                client.Headers.Add("accept", "application/json");
+                client.Headers.Add("user-agent", userAgent);
+                return await client.DownloadDataTaskAsync(new System.Uri(url));
             }
         }
 
@@ -46,8 +36,7 @@ namespace NWS.WebClient.Default
                 client.Headers.Add("accept", "application/json");
                 client.Headers.Add("Content-type", "application/x-www-form-urlencoded");
                 client.Headers.Add("accept-encoding", "gzip, deflate, br");
-                client.Headers.Add("user-agent", "NWS Weather Library for DotNet - https://github.com/keanenfarr/NationalWeatherServiceLibrary");
-                client.Headers.Add("accept-language", "en-US,en;q=0.9");
+                client.Headers.Add("user-agent", userAgent);
                 var response = client.UploadValues(new System.Uri(url), "POST", postData);
 
                 return response;
