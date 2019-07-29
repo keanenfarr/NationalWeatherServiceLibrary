@@ -201,65 +201,67 @@ namespace NWS.WeatherDataService
 
         internal async Task<List<WeatherStation>> GetAllWeatherStationsAsync()
         {
-            var shortKey = "allweatherstations-short";
-            var longKey = "allweatherstations-long";
+            return await Task.Run(() => {
+                var shortKey = "allweatherstations-short";
+                var longKey = "allweatherstations-long";
 
-            var memoryCache = MemoryCache.Default;
+                var memoryCache = MemoryCache.Default;
 
-            if (!memoryCache.Contains(shortKey))
-            {
-                //Multi thread safe.
-                lock (stationListLock)
+                if (!memoryCache.Contains(shortKey))
                 {
-                    //Make sure the memcache still doesn't contain what we need after lock is obtained.
-                    if (!memoryCache.Contains(shortKey))
+                    //Multi thread safe.
+                    lock (stationListLock)
                     {
-                        var list = new List<WeatherStation>();
-
-                        try
+                        //Make sure the memcache still doesn't contain what we need after lock is obtained.
+                        if (!memoryCache.Contains(shortKey))
                         {
-                            var binaryResponse = webClient.Get("https://api.weather.gov/stations");
+                            var list = new List<WeatherStation>();
 
-                            dynamic json = JObject.Parse(Encoding.Default.GetString(binaryResponse));
-
-                            foreach (var station in json.features)
+                            try
                             {
-                                list.Add(new WeatherStation()
+                                var binaryResponse = webClient.Get("https://api.weather.gov/stations");
+
+                                dynamic json = JObject.Parse(Encoding.Default.GetString(binaryResponse));
+
+                                foreach (var station in json.features)
                                 {
-                                    Latitude = station.geometry.coordinates[1],
-                                    Longitude = station.geometry.coordinates[0],
-                                    StationIdentifier = station.properties.stationIdentifier,
-                                    Name = station.properties.name
-                                });
-                            }
-
-                            memoryCache.Add(shortKey, list, DateTimeOffset.UtcNow.AddHours(48));
-
-                            //Create longer cache in case of future failures (though this instance isn't likely to live that long anyway).
-                            memoryCache.Add(longKey, list, DateTimeOffset.UtcNow.AddHours(120));
-                        }
-                        catch (Exception)
-                        {
-                            if (memoryCache.Contains(longKey))
-                            {
-                                //We can load from longterm cache.
-
-                                list = (List<WeatherStation>)memoryCache.Get(longKey);
+                                    list.Add(new WeatherStation()
+                                    {
+                                        Latitude = station.geometry.coordinates[1],
+                                        Longitude = station.geometry.coordinates[0],
+                                        StationIdentifier = station.properties.stationIdentifier,
+                                        Name = station.properties.name
+                                    });
+                                }
 
                                 memoryCache.Add(shortKey, list, DateTimeOffset.UtcNow.AddHours(48));
+
+                                //Create longer cache in case of future failures (though this instance isn't likely to live that long anyway).
+                                memoryCache.Add(longKey, list, DateTimeOffset.UtcNow.AddHours(120));
                             }
-                            else
+                            catch (Exception)
                             {
-                                //No cached version was available and something happened while trying to get the latest list.
-                                //Return empty list.  Future TODO: Longterm storage of list somewhere that we can retreive in this case.
-                                return list;
+                                if (memoryCache.Contains(longKey))
+                                {
+                                    //We can load from longterm cache.
+
+                                    list = (List<WeatherStation>)memoryCache.Get(longKey);
+
+                                    memoryCache.Add(shortKey, list, DateTimeOffset.UtcNow.AddHours(48));
+                                }
+                                else
+                                {
+                                    //No cached version was available and something happened while trying to get the latest list.
+                                    //Return empty list.  Future TODO: Longterm storage of list somewhere that we can retreive in this case.
+                                    return list;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            return (List<WeatherStation>)memoryCache.Get(shortKey);
+                return (List<WeatherStation>)memoryCache.Get(shortKey);
+            });
         }
 
         public decimal ConvertCelsiusToFahrenheit(decimal celsius)
