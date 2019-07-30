@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 using NWS.WebClient;
 using NWS.Model;
 
@@ -17,63 +18,42 @@ namespace NWS.WeatherDataService.Tests
             service = new WeatherDataService(webClient);
         }
 
-
         [TestMethod]
-        public void WeatherConditionIsNotNull()
+        public async Task WeatherConditionIsNotNull()
         {
-            var task = service.GetCurrentConditionsAsync(0, 0);
-
-            task.Wait();
-
-            var conditions = task.Result;
-
+            var conditions = await service.GetCurrentConditionsAsync(0, 0);
+            
             Assert.IsNotNull(conditions);
         }
 
         [TestMethod]
-        public void WeatherConditionCelsiusTempIsCorrect()
+        public async Task WeatherConditionCelsiusTempIsCorrect()
         {
-            var task = service.GetCurrentConditionsAsync(0, 0);
-
-            task.Wait();
-
-            var conditions = task.Result;
+            var conditions = await service.GetCurrentConditionsAsync(0, 0);
 
             Assert.IsTrue(conditions.TemperatureCelsius.Value.ToString("0.0").Equals("-4.4"));
         }
 
         [TestMethod]
-        public void WeatherConditionFahrenheitTempIsCorrect()
+        public async Task WeatherConditionFahrenheitTempIsCorrect()
         {
-            var task = service.GetCurrentConditionsAsync(0, 0);
+            var conditions = await service.GetCurrentConditionsAsync(0, 0);
 
-            task.Wait();
-
-            var conditions = task.Result;
-
-            Assert.IsTrue(conditions.TemperatureFahrenheit.Value.ToString("0.0").Equals("27.6"));
+            Assert.IsTrue(conditions.TemperatureFahrenheit.Value.ToString("0.0").Equals("24.1"));
         }
 
         [TestMethod]
-        public void WeatherForecastIsNotNull()
+        public async Task WeatherForecastIsNotNull()
         {
-            var task = service.GetForecastAsync(0, 0);
-
-            task.Wait();
-
-            var forecast = task.Result;
+            var forecast = await service.GetForecastAsync(0, 0);
 
             Assert.IsNotNull(forecast);
         }
 
         [TestMethod]
-        public void WeatherForecastContains14Periods()
+        public async Task WeatherForecastContains14Periods()
         {
-            var task = service.GetForecastAsync(0, 0);
-
-            task.Wait();
-
-            var forecast = task.Result;
+            var forecast = await service.GetForecastAsync(0, 0);
 
             Assert.IsTrue(forecast.Periods.Count.Equals(14));
         }

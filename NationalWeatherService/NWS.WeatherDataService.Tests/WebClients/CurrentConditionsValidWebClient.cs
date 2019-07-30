@@ -332,12 +332,96 @@ namespace NWS.WeatherDataService.Tests.WebClients
             get
             {
                 return @"{
-                    ""correlationId"": ""39de95cc-60f0-4d4d-8e65-6e92bc216e09"",
-                    ""title"": ""Redirect"",
-                    ""type"": ""https://api.weather.gov/problems/GridpointRedirect"",
-                    ""status"": 301,
-                    ""detail"": ""The requested data can be found here: /gridpoints/SLC/105,209/forecast"",
-                    ""instance"": ""https://api.weather.gov/requests/39de95cc-60f0-4d4d-8e65-6e92bc216e09""
+                    ""@context"": [
+                        ""https://raw.githubusercontent.com/geojson/geojson-ld/master/contexts/geojson-base.jsonld"",
+                        {
+                            ""wx"": ""https://api.weather.gov/ontology#"",
+                            ""s"": ""https://schema.org/"",
+                            ""geo"": ""http://www.opengis.net/ont/geosparql#"",
+                            ""unit"": ""http://codes.wmo.int/common/unit/"",
+                            ""@vocab"": ""https://api.weather.gov/ontology#"",
+                            ""geometry"": {
+                                ""@id"": ""s:GeoCoordinates"",
+                                ""@type"": ""geo:wktLiteral""
+                            },
+                            ""city"": ""s:addressLocality"",
+                            ""state"": ""s:addressRegion"",
+                            ""distance"": {
+                                ""@id"": ""s:Distance"",
+                                ""@type"": ""s:QuantitativeValue""
+                            },
+                            ""bearing"": {
+                                ""@type"": ""s:QuantitativeValue""
+                            },
+                            ""value"": {
+                                ""@id"": ""s:value""
+                            },
+                            ""unitCode"": {
+                                ""@id"": ""s:unitCode"",
+                                ""@type"": ""@id""
+                            },
+                            ""forecastOffice"": {
+                                ""@type"": ""@id""
+                            },
+                            ""forecastGridData"": {
+                                ""@type"": ""@id""
+                            },
+                            ""publicZone"": {
+                                ""@type"": ""@id""
+                            },
+                            ""county"": {
+                                ""@type"": ""@id""
+                            }
+                        }
+                    ],
+                    ""id"": ""https://api.weather.gov/points/40.769359,-111.8932"",
+                    ""type"": ""Feature"",
+                    ""geometry"": {
+                        ""type"": ""Point"",
+                        ""coordinates"": [
+                            -111.8932,
+                            40.769359
+                        ]
+                    },
+                    ""properties"": {
+                        ""@id"": ""https://api.weather.gov/points/40.7693,-111.8932"",
+                        ""@type"": ""wx:Point"",
+                        ""cwa"": ""SLC"",
+                        ""forecastOffice"": ""https://api.weather.gov/offices/SLC"",
+                        ""gridX"": 107,
+                        ""gridY"": 209,
+                        ""forecast"": ""https://api.weather.gov/gridpoints/SLC/105,209/forecast"",
+                        ""forecastHourly"": ""https://api.weather.gov/gridpoints/SLC/105,209/forecast/hourly"",
+                        ""forecastGridData"": ""https://api.weather.gov/gridpoints/SLC/105,209"",
+                        ""observationStations"": ""https://api.weather.gov/gridpoints/SLC/105,209/stations"",
+                        ""relativeLocation"": {
+                            ""type"": ""Feature"",
+                            ""geometry"": {
+                                ""type"": ""Point"",
+                                ""coordinates"": [
+                                    -111.8932457,
+                                    40.769359
+                                ]
+                            },
+                            ""properties"": {
+                                ""city"": ""Salt Lake City"",
+                                ""state"": ""UT"",
+                                ""distance"": {
+                                    ""value"": 1083.2288538781825,
+                                    ""unitCode"": ""unit:m""
+                                },
+                                ""bearing"": {
+                                    ""value"": 48,
+                                    ""unitCode"": ""unit:degrees_true""
+                                }
+                            }
+                        },
+                        ""forecastZone"": ""https://api.weather.gov/zones/forecast/UTZ001"",
+                        ""county"": ""https://api.weather.gov/zones/county/UTC005"",
+                        ""fireWeatherZone"": ""https://api.weather.gov/zones/fire/UTZ479"",
+                        ""timeZone"": ""America/Denver"",
+                        ""radarStation"": ""KMTX""
+                    }
                 }";
             }
         }
