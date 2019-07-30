@@ -266,7 +266,7 @@ namespace NWS.WeatherDataService
 
         public decimal ConvertCelsiusToFahrenheit(decimal celsius)
         {
-            return (celsius * (9 / 5)) + 32;
+            return (celsius * 9 / 5) + 32;
         }
 
         public decimal ConvertMetersPerSecondToMilesPerHour(decimal speed)
