@@ -21,7 +21,7 @@ namespace NWS.WeatherDataService.Tests
         [TestMethod]
         public async Task WeatherConditionIsNotNull()
         {
-            var conditions = await service.GetCurrentConditionsAsync(0, 0);
+            var conditions = await service.GetCurrentConditionsAsync(0, 0, StateTypes.AK);
             
             Assert.IsNotNull(conditions);
         }
@@ -29,7 +29,7 @@ namespace NWS.WeatherDataService.Tests
         [TestMethod]
         public async Task WeatherConditionCelsiusTempIsCorrect()
         {
-            var conditions = await service.GetCurrentConditionsAsync(0, 0);
+            var conditions = await service.GetCurrentConditionsAsync(0, 0, StateTypes.AK);
 
             Assert.IsTrue(conditions.TemperatureCelsius.Value.ToString("0.0").Equals("-4.4"));
         }
@@ -37,7 +37,7 @@ namespace NWS.WeatherDataService.Tests
         [TestMethod]
         public async Task WeatherConditionFahrenheitTempIsCorrect()
         {
-            var conditions = await service.GetCurrentConditionsAsync(0, 0);
+            var conditions = await service.GetCurrentConditionsAsync(0, 0, StateTypes.AK);
 
             Assert.IsTrue(conditions.TemperatureFahrenheit.Value.ToString("0.0").Equals("24.1"));
         }

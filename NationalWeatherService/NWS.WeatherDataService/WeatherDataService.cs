@@ -13,7 +13,7 @@ namespace NWS.WeatherDataService
 {
     public class WeatherDataService : IWeatherDataProvider
     {
-        IWebClient webClient;
+        readonly IWebClient webClient;
 
         static object stationListLock = new object();
 
@@ -27,7 +27,7 @@ namespace NWS.WeatherDataService
             this.webClient = webClient;
         }
 
-        public async Task<CurrentConditionsResponse> GetCurrentConditionsAsync(decimal lat, decimal lng)
+        public async Task<CurrentConditionsResponse> GetCurrentConditionsAsync(decimal lat, decimal lng, StateTypes state)
         {
             var notStationIdList = new List<string>();
 
@@ -37,7 +37,7 @@ namespace NWS.WeatherDataService
 
             while (count < 5 && (response == null || !response.TemperatureCelsius.HasValue))
             {
-                var station = await GetClosestWeatherStationAsync(lat, lng, notStationIdList);
+                var station = await GetClosestWeatherStationAsync(lat, lng, state, notStationIdList);
 
                 response = await GetCurrentConditionsForStationAsync(station);
 
@@ -170,9 +170,9 @@ namespace NWS.WeatherDataService
             return null;
         }
 
-        internal async Task<WeatherStation> GetClosestWeatherStationAsync(decimal lat, decimal lng, List<string> notStationIdentifierList = null)
+        internal async Task<WeatherStation> GetClosestWeatherStationAsync(decimal lat, decimal lng, StateTypes state, List<string> notStationIdentifierList = null)
         {
-            var stations = await GetAllWeatherStationsAsync();
+            var stations = await GetAllWeatherStationsAsync(state);
 
             if (notStationIdentifierList != null && notStationIdentifierList.Count > 0)
             {
@@ -199,11 +199,11 @@ namespace NWS.WeatherDataService
             return closestStation;
         }
 
-        internal async Task<List<WeatherStation>> GetAllWeatherStationsAsync()
+        internal async Task<List<WeatherStation>> GetAllWeatherStationsAsync(StateTypes state)
         {
             return await Task.Run(() => {
-                var shortKey = "allweatherstations-short";
-                var longKey = "allweatherstations-long";
+                var shortKey = $"allweatherstations-short-{state}";
+                var longKey = $"allweatherstations-long-{state}";
 
                 var memoryCache = MemoryCache.Default;
 
@@ -219,7 +219,7 @@ namespace NWS.WeatherDataService
 
                             try
                             {
-                                var binaryResponse = webClient.Get("https://api.weather.gov/stations");
+                                var binaryResponse = webClient.Get($"https://api.weather.gov/stations?state={state}");
 
                                 dynamic json = JObject.Parse(Encoding.Default.GetString(binaryResponse));
 
