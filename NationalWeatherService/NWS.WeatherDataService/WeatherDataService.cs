@@ -27,26 +27,50 @@ namespace NWS.WeatherDataService
             this.webClient = webClient;
         }
 
-        public async Task<CurrentConditionsResponse> GetCurrentConditionsAsync(decimal lat, decimal lng, StateTypes state)
+        public async Task<CurrentConditionsResponse> GetCurrentConditionsAsync(decimal lat, decimal lng)
         {
-            var notStationIdList = new List<string>();
-
-            var count = 0;
-
             CurrentConditionsResponse response = null;
+            
+            var binaryResponse = await webClient.GetAsync(string.Format("https://api.weather.gov/points/{0},{1}", lat.ToString("0.####"), lng.ToString("0.####")));
 
-            while (count < 5 && (response == null || !response.TemperatureCelsius.HasValue))
+            var redirectResponseText = Encoding.Default.GetString(binaryResponse);
+
+            //We just need the "detail" attribute to know what gridpoints are there.
+
+            dynamic json = JObject.Parse(redirectResponseText);
+
+            var observationStationsUrl = (string)json.properties.observationStations;
+
+            binaryResponse = await webClient.GetAsync(observationStationsUrl);
+
+            var observationResponseText = Encoding.Default.GetString(binaryResponse);
+
+            dynamic json2 = JObject.Parse(observationResponseText);
+
+            var stations = json2.features;
+
+            if (stations.Length > 0)
             {
-                var station = await GetClosestWeatherStationAsync(lat, lng, state, notStationIdList);
-
-                response = await GetCurrentConditionsForStationAsync(station);
-
-                if (response == null || !response.TemperatureCelsius.HasValue)
+                for (int i = 0; i < stations.Length; i++)
                 {
-                    notStationIdList.Add(station.StationIdentifier);
-                }
+                    var s = stations[i];
 
-                count++;
+                    if (s != null)
+                    {
+                        var station = new WeatherStation()
+                        {
+                            Name = s.name,
+                            StationIdentifier = s.stationIdentifier
+                        };
+
+                        response = await GetCurrentConditionsForStationAsync(station);
+                    }
+
+                    if (response != null)
+                    {
+                        break;
+                    }
+                }
             }
 
             return response;

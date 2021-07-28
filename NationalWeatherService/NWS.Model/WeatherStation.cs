@@ -10,5 +10,6 @@ namespace NWS.Model
         public decimal Longitude { get; set; }
         public string StationIdentifier { get; set; }
         public string Name { get; set; }
+        public decimal ElevationInMeters { get; set; }
     }
 }
