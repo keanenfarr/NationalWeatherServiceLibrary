@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NWS.WebClient", "NationalWe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NWS.WebClient.Default", "NationalWeatherService\NWS.WebClient.Default\NWS.WebClient.Default.csproj", "{C2B3E974-E1C9-40F4-BCCC-294C5DE45E7E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NWS.ConsoleDemoApp", "NWS.ConsoleDemoApp\NWS.ConsoleDemoApp.csproj", "{6E72DC33-1FF6-4E34-9C26-8ADAF7338C68}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{C2B3E974-E1C9-40F4-BCCC-294C5DE45E7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2B3E974-E1C9-40F4-BCCC-294C5DE45E7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2B3E974-E1C9-40F4-BCCC-294C5DE45E7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E72DC33-1FF6-4E34-9C26-8ADAF7338C68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E72DC33-1FF6-4E34-9C26-8ADAF7338C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E72DC33-1FF6-4E34-9C26-8ADAF7338C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E72DC33-1FF6-4E34-9C26-8ADAF7338C68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
