@@ -4,6 +4,9 @@ using System.Text;
 
 namespace NWS.Model
 {
+    /// <summary>
+    /// A NWS weather station
+    /// </summary>
     public class WeatherStation
     {
         public decimal Latitude { get; set; }

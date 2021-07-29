@@ -4,6 +4,9 @@ using System.Text;
 
 namespace NWS.Model
 {
+    /// <summary>
+    /// A weather forecast
+    /// </summary>
     public class ForecastResponse
     {
         public IList<ForecastPeriod> Periods { get; set; }

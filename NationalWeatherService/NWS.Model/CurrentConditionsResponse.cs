@@ -2,6 +2,9 @@
 
 namespace NWS.Model
 {
+    /// <summary>
+    /// Current weather conditions
+    /// </summary>
     public class CurrentConditionsResponse
     {
         public DateTime ObservationDate { get; set; }
@@ -45,5 +48,10 @@ namespace NWS.Model
         public decimal? HeatIndexFahrenheit { get; set; }
 
         public string RawData { get; set; }
+
+        /// <summary>
+        /// The station that provided the conditions.
+        /// </summary>
+        public WeatherStation Station { get; set; }
     }
 }
