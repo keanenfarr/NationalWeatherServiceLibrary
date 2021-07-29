@@ -31,6 +31,10 @@ namespace NWS.WeatherDataService.Tests.WebClients
                 {
                     response = LatLngToPointRedirect;
                 }
+                else if (url.Equals("https://api.weather.gov/gridpoints/SLC/105,209/stations"))
+                {
+                    response = GridpointStations;
+                }
                 else if (url.Equals("https://api.weather.gov/gridpoints/SLC/105,209/forecast"))
                 {
                     response = GridPointForecast;
@@ -585,6 +589,119 @@ namespace NWS.WeatherDataService.Tests.WebClients
                             }
                         ]
                     }
+                }";
+            }
+        }
+
+        string GridpointStations
+        {
+            get
+            {
+                return @"{
+                    ""@context"": [
+                        ""https://geojson.org/geojson-ld/geojson-context.jsonld"",
+                        {
+                            ""@version"": ""1.1"",
+                            ""wx"": ""https://api.weather.gov/ontology#"",
+                            ""s"": ""https://schema.org/"",
+                            ""geo"": ""http://www.opengis.net/ont/geosparql#"",
+                            ""unit"": ""http://codes.wmo.int/common/unit/"",
+                            ""@vocab"": ""https://api.weather.gov/ontology#"",
+                            ""geometry"": {
+                                ""@id"": ""s:GeoCoordinates"",
+                                ""@type"": ""geo:wktLiteral""
+                            },
+                            ""city"": ""s:addressLocality"",
+                            ""state"": ""s:addressRegion"",
+                            ""distance"": {
+                                ""@id"": ""s:Distance"",
+                                ""@type"": ""s:QuantitativeValue""
+                            },
+                            ""bearing"": {
+                                ""@type"": ""s:QuantitativeValue""
+                            },
+                            ""value"": {
+                                ""@id"": ""s:value""
+                            },
+                            ""unitCode"": {
+                                ""@id"": ""s:unitCode"",
+                                ""@type"": ""@id""
+                            },
+                            ""forecastOffice"": {
+                                ""@type"": ""@id""
+                            },
+                            ""forecastGridData"": {
+                                ""@type"": ""@id""
+                            },
+                            ""publicZone"": {
+                                ""@type"": ""@id""
+                            },
+                            ""county"": {
+                                ""@type"": ""@id""
+                            },
+                            ""observationStations"": {
+                                ""@container"": ""@list"",
+                                ""@type"": ""@id""
+                            }
+                        }
+                    ],
+                    ""type"": ""FeatureCollection"",
+                    ""features"": [
+                        {
+                            ""id"": ""https://api.weather.gov/stations/KLGU"",
+                            ""type"": ""Feature"",
+                            ""geometry"": {
+                                ""type"": ""Point"",
+                                ""coordinates"": [
+                                    -111.85187000000001,
+                                    41.786520000000003
+                                ]
+                            },
+                            ""properties"": {
+                                ""@id"": ""https://api.weather.gov/stations/KLGU"",
+                                ""@type"": ""wx:ObservationStation"",
+                                ""elevation"": {
+                                    ""value"": 1355.1407999999999,
+                                    ""unitCode"": ""unit:m""
+                                },
+                                ""stationIdentifier"": ""KLGU"",
+                                ""name"": ""Logan-Cache Airport"",
+                                ""timeZone"": ""America/Denver"",
+                                ""forecast"": ""https://api.weather.gov/zones/forecast/UTZ107"",
+                                ""county"": ""https://api.weather.gov/zones/county/UTC005"",
+                                ""fireWeatherZone"": ""https://api.weather.gov/zones/fire/UTZ479""
+                            }
+                        },
+                        {
+                            ""id"": ""https://api.weather.gov/stations/KOGD"",
+                            ""type"": ""Feature"",
+                            ""geometry"": {
+                                ""type"": ""Point"",
+                                ""coordinates"": [
+                                    -112.01681000000001,
+                                    41.19406
+                                ]
+                            },
+                            ""properties"": {
+                                ""@id"": ""https://api.weather.gov/stations/KOGD"",
+                                ""@type"": ""wx:ObservationStation"",
+                                ""elevation"": {
+                                    ""value"": 1353.3119999999999,
+                                    ""unitCode"": ""unit:m""
+                                },
+                                ""stationIdentifier"": ""KOGD"",
+                                ""name"": ""Ogden-Hinckley Airport"",
+                                ""timeZone"": ""America/Denver"",
+                                ""forecast"": ""https://api.weather.gov/zones/forecast/UTZ104"",
+                                ""county"": ""https://api.weather.gov/zones/county/UTC057"",
+                                ""fireWeatherZone"": ""https://api.weather.gov/zones/fire/UTZ478""
+                            }
+                        }
+                    ],
+                    ""observationStations"": [
+                        ""https://api.weather.gov/stations/KLGU"",
+                        ""https://api.weather.gov/stations/KOGD""
+                    ]
                 }";
             }
         }

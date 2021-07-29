@@ -49,9 +49,9 @@ namespace NWS.WeatherDataService
 
             var stations = json2.features;
 
-            if (stations.Length > 0)
+            if (stations.Count > 0)
             {
-                for (int i = 0; i < stations.Length; i++)
+                for (int i = 0; i < stations.Count; i++)
                 {
                     var s = stations[i];
 
@@ -59,8 +59,8 @@ namespace NWS.WeatherDataService
                     {
                         var station = new WeatherStation()
                         {
-                            Name = s.name,
-                            StationIdentifier = s.stationIdentifier
+                            Name = s.properties.name,
+                            StationIdentifier = s.properties.stationIdentifier
                         };
 
                         response = await GetCurrentConditionsForStationAsync(station);
