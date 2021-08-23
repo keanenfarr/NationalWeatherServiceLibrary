@@ -23,11 +23,11 @@ namespace NWS.Model
 
         public decimal? WindDirection { get; set; }
 
-        public decimal? WindSpeedMetersPerSecond { get; set; }
+        public decimal? WindSpeedKilometersPerHour { get; set; }
 
         public decimal? WindSpeedMilesPerHour { get; set; }
 
-        public decimal? WindGustMetersPerSecond { get; set; }
+        public decimal? WindGustKilometersPerHour { get; set; }
 
         public decimal? WindGustMilesPerHour { get; set; }
 

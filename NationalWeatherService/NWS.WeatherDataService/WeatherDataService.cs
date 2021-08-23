@@ -333,8 +333,8 @@ namespace NWS.WeatherDataService
                     TemperatureCelsius = TryConvertToDecimal(properties.temperature.value),
                     DewPointCelsius = TryConvertToDecimal(properties.dewpoint.value),
                     WindDirection = TryConvertToDecimal(properties.windDirection.value),
-                    WindSpeedMetersPerSecond = TryConvertToDecimal(properties.windSpeed.value),
-                    WindGustMetersPerSecond = TryConvertToDecimal(properties.windGust.value),
+                    WindSpeedKilometersPerHour = TryConvertToDecimal(properties.windSpeed.value),
+                    WindGustKilometersPerHour = TryConvertToDecimal(properties.windGust.value),
                     BarometricPressure = TryConvertToDecimal(properties.barometricPressure.value),
                     SeaLevelPressure = TryConvertToDecimal(properties.seaLevelPressure.value),
                     VisibilityMeters = TryConvertToDecimal(properties.visibility.value),
@@ -365,14 +365,14 @@ namespace NWS.WeatherDataService
                     response.HeatIndexFahrenheit = Utilities.ConvertCelsiusToFahrenheit(response.HeatIndexCelsius.Value);
                 }
 
-                if (response.WindSpeedMetersPerSecond.HasValue)
+                if (response.WindSpeedKilometersPerHour.HasValue)
                 {
-                    response.WindSpeedMilesPerHour = Utilities.ConvertKilometersPerHourToMilesPerHour(response.WindSpeedMetersPerSecond.Value);
+                    response.WindSpeedMilesPerHour = Utilities.ConvertKilometersPerHourToMilesPerHour(response.WindSpeedKilometersPerHour.Value);
                 }
 
-                if (response.WindGustMetersPerSecond.HasValue)
+                if (response.WindGustKilometersPerHour.HasValue)
                 {
-                    response.WindGustMilesPerHour = Utilities.ConvertKilometersPerHourToMilesPerHour(response.WindGustMetersPerSecond.Value);
+                    response.WindGustMilesPerHour = Utilities.ConvertKilometersPerHourToMilesPerHour(response.WindGustKilometersPerHour.Value);
                 }
 
                 response.RawData = observationsText;
