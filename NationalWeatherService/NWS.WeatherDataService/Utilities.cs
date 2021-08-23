@@ -14,5 +14,10 @@
         {
             return speed * 2.23694m;
         }
+
+        public static decimal ConvertKilometersPerHourToMilesPerHour(decimal speed)
+        {
+            return speed / 1.609m;
+        }
     }
 }

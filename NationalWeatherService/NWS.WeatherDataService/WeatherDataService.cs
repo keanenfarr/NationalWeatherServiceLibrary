@@ -367,12 +367,12 @@ namespace NWS.WeatherDataService
 
                 if (response.WindSpeedMetersPerSecond.HasValue)
                 {
-                    response.WindSpeedMilesPerHour = Utilities.ConvertMetersPerSecondToMilesPerHour(response.WindSpeedMetersPerSecond.Value);
+                    response.WindSpeedMilesPerHour = Utilities.ConvertKilometersPerHourToMilesPerHour(response.WindSpeedMetersPerSecond.Value);
                 }
 
                 if (response.WindGustMetersPerSecond.HasValue)
                 {
-                    response.WindGustMilesPerHour = Utilities.ConvertMetersPerSecondToMilesPerHour(response.WindGustMetersPerSecond.Value);
+                    response.WindGustMilesPerHour = Utilities.ConvertKilometersPerHourToMilesPerHour(response.WindGustMetersPerSecond.Value);
                 }
 
                 response.RawData = observationsText;
