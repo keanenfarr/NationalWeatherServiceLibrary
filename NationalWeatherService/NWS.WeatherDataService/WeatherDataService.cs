@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Caching;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using GeoCoordinatePortable;
@@ -39,10 +37,7 @@ namespace NWS.WeatherDataService
             CurrentConditionsResponse response = null;
             
             //Get the current list of stations for the given latitude and longitude.
-            var binaryResponse = await webClient.GetAsync($"https://api.weather.gov/points/{ lat.ToString("0.####") },{ lng.ToString("0.####") }");
-
-            //Convert the binary response to text.
-            var redirectResponseText = Encoding.Default.GetString(binaryResponse);
+            var redirectResponseText = await webClient.GetAsync($"https://api.weather.gov/points/{ lat.ToString("0.####") },{ lng.ToString("0.####") }");
 
             //Parse the json response
             dynamic json = JObject.Parse(redirectResponseText);
@@ -51,10 +46,7 @@ namespace NWS.WeatherDataService
             var observationStationsUrl = (string)json.properties.observationStations;
 
             //Load the observation stations URL from the API
-            binaryResponse = await webClient.GetAsync(observationStationsUrl);
-
-            //Conver the response to text.
-            var observationResponseText = Encoding.Default.GetString(binaryResponse);
+            var observationResponseText = await webClient.GetAsync(observationStationsUrl);
 
             //Parse the json response
             dynamic json2 = JObject.Parse(observationResponseText);
@@ -121,10 +113,7 @@ namespace NWS.WeatherDataService
         public async Task<ForecastResponse> GetForecastAsync(decimal lat, decimal lng)
         {
             //Get the gridpoint information for the given latitude and longitude.
-            var binaryResponse = await webClient.GetAsync($"https://api.weather.gov/points/{ lat.ToString("0.####") },{ lng.ToString("0.####") }");
-
-            //Convert the binary response to text
-            var redirectResponseText = Encoding.Default.GetString(binaryResponse);
+            var redirectResponseText = await webClient.GetAsync($"https://api.weather.gov/points/{ lat.ToString("0.####") },{ lng.ToString("0.####") }");
 
             //Parse the json response
             dynamic json = JObject.Parse(redirectResponseText);
@@ -133,10 +122,7 @@ namespace NWS.WeatherDataService
             var forecastUrl = (string)json.properties.forecast;
 
             //Load the forecast Url
-            binaryResponse = await webClient.GetAsync(forecastUrl);
-
-            //Convert the binary response to text
-            var forecastResponseText = Encoding.Default.GetString(binaryResponse);
+            var forecastResponseText = await webClient.GetAsync(forecastUrl);
 
             //Parse the json response
             dynamic json2 = JObject.Parse(forecastResponseText);
@@ -222,90 +208,44 @@ namespace NWS.WeatherDataService
         /// <returns>A list of weather stations for the given state</returns>
         public async Task<List<WeatherStation>> GetAllWeatherStationsForStateAsync(StateTypes state)
         {
-            return await Task.Run(() => {
-                //Provide keys for long and short term memory caches
-                var shortKey = $"allweatherstations-short-{state}";
-                var longKey = $"allweatherstations-long-{state}";
+            var list = new List<WeatherStation>();
 
-                //Use the default memory cache
-                var memoryCache = MemoryCache.Default;
+            //Load the list of weather stations from the API
+            var stateList = await webClient.GetAsync($"https://api.weather.gov/stations?state={state}");
 
-                //Check if short-term memory cache already has the weather stations for the given state
-                if (!memoryCache.Contains(shortKey))
+            //Parse the resulting json
+            dynamic json = JObject.Parse(stateList);
+
+            //Convert each returned weather station to a WeatherStation object and add it to the list to return
+            foreach (var s in json.features)
+            {
+                var station = new WeatherStation()
                 {
-                    //Multi thread safe.
-                    lock (stationListLock)
-                    {
-                        //Make sure the memcache still doesn't contain what we need after lock is obtained.
-                        if (!memoryCache.Contains(shortKey))
-                        {
-                            var list = new List<WeatherStation>();
+                    StationIdentifier = s.properties.stationIdentifier,
+                    Name = s.properties.name,
+                    ElevationInMeters = s.properties.elevation.value
+                };
 
-                            try
-                            {
-                                //Load the list of weather stations from the API
-                                var binaryResponse = webClient.Get($"https://api.weather.gov/stations?state={state}");
-
-                                //Parse the resulting json
-                                dynamic json = JObject.Parse(Encoding.Default.GetString(binaryResponse));
-
-                                //Convert each returned weather station to a WeatherStation object and add it to the list to return
-                                foreach (var s in json.features)
-                                {
-                                    var station = new WeatherStation()
-                                    {
-                                        StationIdentifier = s.properties.stationIdentifier,
-                                        Name = s.properties.name,
-                                        ElevationInMeters = s.properties.elevation.value
-                                    };
-
-                                    if (s.properties.elevation.value != null)
-                                    {
-                                        station.ElevationInMeters = s.properties.elevation.value;
-                                    }
-
-                                    if (s.geometry.coordinates[0] != null)
-                                    {
-                                        station.Longitude = s.geometry.coordinates[0];
-                                    }
-
-                                    if (s.geometry.coordinates[1] != null)
-                                    {
-                                        station.Latitude = s.geometry.coordinates[1];
-                                    }
-
-                                    list.Add(s);
-                                }
-
-                                //Add the list to short-term memory cache
-                                memoryCache.Add(shortKey, list, DateTimeOffset.UtcNow.AddHours(48));
-
-                                //Create longer cache in case of future failures (though this instance isn't likely to live that long anyway).
-                                memoryCache.Add(longKey, list, DateTimeOffset.UtcNow.AddHours(120));
-                            }
-                            catch (Exception)
-                            {
-                                if (memoryCache.Contains(longKey))
-                                {
-                                    //We can load from longterm cache.
-                                    list = (List<WeatherStation>)memoryCache.Get(longKey);
-
-                                    memoryCache.Add(shortKey, list, DateTimeOffset.UtcNow.AddHours(48));
-                                }
-                                else
-                                {
-                                    //No cached version was available and something happened while trying to get the latest list.
-                                    //Return empty list.
-                                    return list;
-                                }
-                            }
-                        }
-                    }
+                if (s.properties.elevation.value != null)
+                {
+                    station.ElevationInMeters = s.properties.elevation.value;
                 }
 
-                //Return list from short term memory cache
-                return (List<WeatherStation>)memoryCache.Get(shortKey);
-            });
+                if (s.geometry.coordinates[0] != null)
+                {
+                    station.Longitude = s.geometry.coordinates[0];
+                }
+
+                if (s.geometry.coordinates[1] != null)
+                {
+                    station.Latitude = s.geometry.coordinates[1];
+                }
+
+                list.Add(s);
+            }
+
+            //Return list from short term memory cache
+            return list;
         }
 
         async Task<CurrentConditionsResponse> GetCurrentConditionsForStationAsync(WeatherStation station)
@@ -313,10 +253,7 @@ namespace NWS.WeatherDataService
             if (station != null)
             {
                 //Get the current observations for the provided weather station
-                var binaryResponse = await webClient.GetAsync($"https://api.weather.gov/stations/{ station.StationIdentifier }/observations/latest");
-
-                //Convert the binary response to text
-                var observationsText = Encoding.Default.GetString(binaryResponse);
+                var observationsText = await webClient.GetAsync($"https://api.weather.gov/stations/{ station.StationIdentifier }/observations/latest");
 
                 //Parse the json response
                 dynamic json = JObject.Parse(observationsText);

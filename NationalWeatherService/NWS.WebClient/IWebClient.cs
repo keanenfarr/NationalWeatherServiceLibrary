@@ -5,8 +5,7 @@ namespace NWS.WebClient
 {
     public interface IWebClient
     {
-        byte[] Get(string url);
 
-        Task<byte[]> GetAsync(string url);
+        Task<string> GetAsync(string url);
     }
 }

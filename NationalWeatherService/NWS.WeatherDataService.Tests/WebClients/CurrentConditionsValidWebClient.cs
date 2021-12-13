@@ -7,17 +7,8 @@ namespace NWS.WeatherDataService.Tests.WebClients
 {
     class CurrentConditionsValidWebClient : IWebClient
     {
-        public byte[] Get(string url)
-        {
-            if (url.Equals("https://api.weather.gov/stations"))
-            {
-                return Encoding.UTF8.GetBytes(AllStations);
-            }
 
-            return new byte[0];   
-        }
-
-        public async Task<byte[]> GetAsync(string url)
+        public async Task<string> GetAsync(string url)
         {
             return await Task.Run(() => {
 
@@ -40,7 +31,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                     response = GridPointForecast;
                 }
 
-                return Encoding.UTF8.GetBytes(response);
+                return response;
             });
         }
 

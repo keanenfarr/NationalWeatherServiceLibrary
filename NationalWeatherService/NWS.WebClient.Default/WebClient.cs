@@ -23,18 +23,13 @@ namespace NWS.WebClient.Default
             }
         }
 
-        public byte[] Get(string url)
-        {
-            return HttpClient.GetByteArrayAsync(url).Result;
-        }
-
-        public async Task<byte[]> GetAsync(string url)
+        public async Task<string> GetAsync(string url)
         {
             var response = await HttpClient.GetAsync(url);
             
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadAsByteArrayAsync();
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }
