@@ -8,7 +8,5 @@ namespace NWS.WebClient
         byte[] Get(string url);
 
         Task<byte[]> GetAsync(string url);
-
-        byte[] Post(string url, NameValueCollection postData);
     }
 }

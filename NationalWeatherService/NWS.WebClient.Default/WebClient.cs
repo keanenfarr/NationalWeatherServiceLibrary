@@ -1,46 +1,40 @@
 ﻿using System.Collections.Specialized;
-using System.Net;
-using System.IO;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System;
+using System.Net.Http.Headers;
 
 namespace NWS.WebClient.Default
 {
     public class WebClient : IWebClient
     {
-        const string userAgent = "NWS Weather Library for DotNet - https://github.com/keanenfarr/NationalWeatherServiceLibrary";
+        protected static HttpClient HttpClient = new HttpClient();
+        private static bool isInitialized = false;
+
+        public WebClient()
+        {
+            if (!isInitialized)
+            {
+                HttpClient.Timeout = new TimeSpan(0, 0, 30);
+                HttpClient.DefaultRequestHeaders.Clear();
+                HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("NWSWeatherLibraryForDotNet/1.0");
+                HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                isInitialized = true;
+            }
+        }
 
         public byte[] Get(string url)
         {
-            using (var client = new System.Net.WebClient())
-            {
-                client.Headers.Add("accept", "application/json");
-                client.Headers.Add("user-agent", userAgent);
-                return client.DownloadData(new System.Uri(url));
-            }
+            return HttpClient.GetByteArrayAsync(url).Result;
         }
 
         public async Task<byte[]> GetAsync(string url)
         {
-            using (var client = new System.Net.WebClient())
-            {
-                client.Headers.Add("accept", "application/json");
-                client.Headers.Add("user-agent", userAgent);
-                return await client.DownloadDataTaskAsync(new System.Uri(url));
-            }
-        }
+            var response = await HttpClient.GetAsync(url);
+            
+            response.EnsureSuccessStatusCode();
 
-        public byte[] Post(string url, NameValueCollection postData)
-        {
-            using (var client = new System.Net.WebClient())
-            {
-                client.Headers.Add("accept", "application/json");
-                client.Headers.Add("Content-type", "application/x-www-form-urlencoded");
-                client.Headers.Add("accept-encoding", "gzip, deflate, br");
-                client.Headers.Add("user-agent", userAgent);
-                var response = client.UploadValues(new System.Uri(url), "POST", postData);
-
-                return response;
-            }
+            return await response.Content.ReadAsByteArrayAsync();
         }
     }
 }

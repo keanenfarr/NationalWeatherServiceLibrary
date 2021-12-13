@@ -44,11 +44,6 @@ namespace NWS.WeatherDataService.Tests.WebClients
             });
         }
 
-        public byte[] Post(string url, NameValueCollection postData)
-        {
-            throw new System.NotImplementedException();
-        }
-
         string GridPointForecast
         {
             get
