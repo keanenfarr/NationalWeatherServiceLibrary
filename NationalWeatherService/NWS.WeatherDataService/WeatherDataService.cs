@@ -198,9 +198,6 @@ namespace NWS.WeatherDataService
             return closestStation;
         }
 
-        //Used to thread lock a memory cache resource in GetAllWeatherStationsAsync
-        static object stationListLock = new object();
-
         /// <summary>
         /// Gets all weather stations for a given state from the API
         /// </summary>
