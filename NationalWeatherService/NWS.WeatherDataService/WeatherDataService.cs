@@ -132,7 +132,7 @@ namespace NWS.WeatherDataService
             {
                 Periods = new List<ForecastPeriod>(),
                 ElevationInMeters = json2.properties.elevation.value,
-                LastUpdatedDate = json2.properties.updated,
+                LastUpdatedDate = json2.properties.updateTime,
                 Latitude = lat,
                 Longitude = lng
             };
