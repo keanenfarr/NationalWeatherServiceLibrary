@@ -90,7 +90,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                         ]
                     },
                     ""properties"": {
-                        ""updated"": ""2019-02-20T20:10:37+00:00"",
+                        ""updateTime"": ""2019-02-20T20:10:37+00:00"",
                         ""units"": ""us"",
                         ""forecastGenerator"": ""BaselineForecastGenerator"",
                         ""generatedAt"": ""2019-02-20T20:20:41+00:00"",
