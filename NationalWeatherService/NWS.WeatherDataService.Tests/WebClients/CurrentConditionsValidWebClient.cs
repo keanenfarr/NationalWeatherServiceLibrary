@@ -112,7 +112,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": ""falling"",
                                 ""windSpeed"": ""3 to 12 mph"",
                                 ""windDirection"": ""S"",
-                                ""icon"": ""https://api.weather.gov/icons/land/day/snow,100?size=medium"",
+                                ""icon"": ""/icons/land/day/snow,100?size=medium"",
                                 ""shortForecast"": ""Light Snow"",
                                 ""detailedForecast"": ""Snow. Mostly cloudy. High near 28, with temperatures falling to around 26 in the afternoon. South wind 3 to 12 mph. Chance of precipitation is 100%. New snow accumulation of less than one inch possible.""
                             },
@@ -127,7 +127,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""3 to 14 mph"",
                                 ""windDirection"": ""SE"",
-                                ""icon"": ""https://api.weather.gov/icons/land/night/snow,30?size=medium"",
+                                ""icon"": ""/icons/land/night/snow,30?size=medium"",
                                 ""shortForecast"": ""Chance Light Snow"",
                                 ""detailedForecast"": ""A chance of snow. Mostly cloudy, with a low around 11. Wind chill values as low as -3. Southeast wind 3 to 14 mph. Chance of precipitation is 30%. New snow accumulation of less than one inch possible.""
                             },
@@ -142,7 +142,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": ""falling"",
                                 ""windSpeed"": ""12 to 16 mph"",
                                 ""windDirection"": ""ENE"",
-                                ""icon"": ""https://api.weather.gov/icons/land/day/snow,30?size=medium"",
+                                ""icon"": ""/icons/land/day/snow,30?size=medium"",
                                 ""shortForecast"": ""Chance Light Snow"",
                                 ""detailedForecast"": ""A chance of snow. Mostly cloudy. High near 30, with temperatures falling to around 27 in the afternoon. Wind chill values as low as -5. East northeast wind 12 to 16 mph. Chance of precipitation is 30%. New snow accumulation of less than one inch possible.""
                             },
@@ -157,7 +157,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""9 to 13 mph"",
                                 ""windDirection"": ""ENE"",
-                                ""icon"": ""https://api.weather.gov/icons/land/night/snow,30/snow,20?size=medium"",
+                                ""icon"": ""/icons/land/night/snow,30/snow,20?size=medium"",
                                 ""shortForecast"": ""Chance Light Snow"",
                                 ""detailedForecast"": ""A chance of snow before 5am. Mostly cloudy, with a low around 10. Wind chill values as low as -1. East northeast wind 9 to 13 mph. Chance of precipitation is 30%. New snow accumulation of less than half an inch possible.""
                             },
@@ -172,7 +172,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""5 to 9 mph"",
                                 ""windDirection"": ""NNW"",
-                                ""icon"": ""https://api.weather.gov/icons/land/day/sct?size=medium"",
+                                ""icon"": ""/icons/land/day/sct?size=medium"",
                                 ""shortForecast"": ""Mostly Sunny"",
                                 ""detailedForecast"": ""Mostly sunny, with a high near 29. North northwest wind 5 to 9 mph.""
                             },
@@ -187,7 +187,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""6 mph"",
                                 ""windDirection"": ""SSW"",
-                                ""icon"": ""https://api.weather.gov/icons/land/night/sct/snow,20?size=medium"",
+                                ""icon"": ""/icons/land/night/sct/snow,20?size=medium"",
                                 ""shortForecast"": ""Partly Cloudy then Slight Chance Light Snow"",
                                 ""detailedForecast"": ""A slight chance of snow after 5am. Partly cloudy, with a low around 10. Chance of precipitation is 20%. New snow accumulation of less than half an inch possible.""
                             },
@@ -202,7 +202,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""8 mph"",
                                 ""windDirection"": ""SSW"",
-                                ""icon"": ""https://api.weather.gov/icons/land/day/snow,20/snow,40?size=medium"",
+                                ""icon"": ""/icons/land/day/snow,20/snow,40?size=medium"",
                                 ""shortForecast"": ""Chance Light Snow"",
                                 ""detailedForecast"": ""A chance of snow. Mostly cloudy, with a high near 30. Chance of precipitation is 40%. New snow accumulation of less than half an inch possible.""
                             },
@@ -217,7 +217,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""7 mph"",
                                 ""windDirection"": ""SSW"",
-                                ""icon"": ""https://api.weather.gov/icons/land/night/snow?size=medium"",
+                                ""icon"": ""/icons/land/night/snow?size=medium"",
                                 ""shortForecast"": ""Chance Light Snow"",
                                 ""detailedForecast"": ""A chance of snow. Mostly cloudy, with a low around 19.""
                             },
@@ -232,7 +232,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""7 mph"",
                                 ""windDirection"": ""SSW"",
-                                ""icon"": ""https://api.weather.gov/icons/land/day/snow?size=medium"",
+                                ""icon"": ""/icons/land/day/snow?size=medium"",
                                 ""shortForecast"": ""Chance Light Snow"",
                                 ""detailedForecast"": ""A chance of snow. Cloudy, with a high near 36.""
                             },
@@ -247,7 +247,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""8 mph"",
                                 ""windDirection"": ""S"",
-                                ""icon"": ""https://api.weather.gov/icons/land/night/snow?size=medium"",
+                                ""icon"": ""/icons/land/night/snow?size=medium"",
                                 ""shortForecast"": ""Chance Light Snow"",
                                 ""detailedForecast"": ""A chance of snow. Cloudy, with a low around 24.""
                             },
@@ -262,7 +262,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""10 mph"",
                                 ""windDirection"": ""SW"",
-                                ""icon"": ""https://api.weather.gov/icons/land/day/snow?size=medium"",
+                                ""icon"": ""/icons/land/day/snow?size=medium"",
                                 ""shortForecast"": ""Chance Light Snow"",
                                 ""detailedForecast"": ""A chance of snow before 5pm, then a chance of snow showers. Mostly cloudy, with a high near 36.""
                             },
@@ -277,7 +277,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""5 to 8 mph"",
                                 ""windDirection"": ""SSW"",
-                                ""icon"": ""https://api.weather.gov/icons/land/night/snow?size=medium"",
+                                ""icon"": ""/icons/land/night/snow?size=medium"",
                                 ""shortForecast"": ""Chance Snow Showers"",
                                 ""detailedForecast"": ""A chance of snow showers. Mostly cloudy, with a low around 20.""
                             },
@@ -292,7 +292,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""7 mph"",
                                 ""windDirection"": ""S"",
-                                ""icon"": ""https://api.weather.gov/icons/land/day/snow?size=medium"",
+                                ""icon"": ""/icons/land/day/snow?size=medium"",
                                 ""shortForecast"": ""Chance Snow Showers"",
                                 ""detailedForecast"": ""A chance of snow showers. Mostly cloudy, with a high near 38.""
                             },
@@ -307,7 +307,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                                 ""temperatureTrend"": null,
                                 ""windSpeed"": ""7 mph"",
                                 ""windDirection"": ""S"",
-                                ""icon"": ""https://api.weather.gov/icons/land/night/snow?size=medium"",
+                                ""icon"": ""/icons/land/night/snow?size=medium"",
                                 ""shortForecast"": ""Chance Snow Showers"",
                                 ""detailedForecast"": ""A chance of snow showers. Mostly cloudy, with a low around 28.""
                             }
@@ -483,7 +483,7 @@ namespace NWS.WeatherDataService.Tests.WebClients
                         ""timestamp"": ""2019-02-20T16:51:00+00:00"",
                         ""rawMessage"": ""KLGU 201651Z AUTO 18012KT 10SM FEW047 M04/M11 A2969 RMK AO2 SLP088 T10441106"",
                         ""textDescription"": ""Mostly Clear"",
-                        ""icon"": ""https://api.weather.gov/icons/land/day/few?size=medium"",
+                        ""icon"": ""/icons/land/day/few?size=medium"",
                         ""presentWeather"": [],
                         ""temperature"": {
                             ""value"": -4.3999999999999773,
