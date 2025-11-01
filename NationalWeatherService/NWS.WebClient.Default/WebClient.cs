@@ -11,13 +11,18 @@ namespace NWS.WebClient.Default
         protected static HttpClient HttpClient = new HttpClient();
         private static bool isInitialized = false;
 
-        public WebClient()
+        /// <summary>
+        /// Constructor that allows setting of Application Name for User-Agent header.
+        /// This is used by NWS to track usage.
+        /// </summary>
+        /// <param name="ApplicationName"></param>
+        public WebClient(string ApplicationName)
         {
             if (!isInitialized)
             {
                 HttpClient.Timeout = new TimeSpan(0, 0, 30);
                 HttpClient.DefaultRequestHeaders.Clear();
-                HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("NWSWeatherLibraryForDotNet/1.0");
+                HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationName);
                 HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 isInitialized = true;
             }
@@ -26,7 +31,7 @@ namespace NWS.WebClient.Default
         public async Task<string> GetAsync(string url)
         {
             var response = await HttpClient.GetAsync(url);
-            
+
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadAsStringAsync();
