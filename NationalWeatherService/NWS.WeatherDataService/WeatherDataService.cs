@@ -9,35 +9,28 @@ using System.Threading.Tasks;
 
 namespace NWS.WeatherDataService
 {
+
     /// <summary>
-    /// Gets weather data from the National Weather Service (api.weather.gov)
+    /// Gets the weather stations for a given latitude and longitude
     /// </summary>
-    public class WeatherDataService : IWeatherDataProvider
+    internal class WeatherStationResultFactory : IResultFactory<LocationKey, IEnumerable<WeatherStation>>
     {
-        readonly IWebClient webClient;
+        private readonly IWebClient WebClient;
 
-        public WeatherDataService()
+        public WeatherStationResultFactory(IWebClient webClient)
         {
-            webClient = new NWS.WebClient.Default.WebClient();
+            this.WebClient = webClient;
         }
 
-        public WeatherDataService(IWebClient webClient)
+        public async Task<IEnumerable<WeatherStation>> GetResult(LocationKey key)
         {
-            this.webClient = webClient;
-        }
+            var lat = key.Latitude;
+            var lng = key.Longitude;
 
-        /// <summary>
-        /// Gets the current weather conditions for a given latitude and longitude
-        /// </summary>
-        /// <param name="lat">Latitude</param>
-        /// <param name="lng">Longitude</param>
-        /// <returns>A CurrentConditionsResponse containing current weather data conditions.</returns>
-        public async Task<CurrentConditionsResponse> GetCurrentConditionsAsync(decimal lat, decimal lng)
-        {
-            CurrentConditionsResponse response = null;
-            
+            var result = new List<WeatherStation>();
+
             //Get the current list of stations for the given latitude and longitude.
-            var redirectResponseText = await webClient.GetAsync($"https://api.weather.gov/points/{ lat.ToString("0.####") },{ lng.ToString("0.####") }");
+            var redirectResponseText = await WebClient.GetAsync($"https://api.weather.gov/points/{lat.ToString("0.####")},{lng.ToString("0.####")}");
 
             //Parse the json response
             dynamic json = JObject.Parse(redirectResponseText);
@@ -46,7 +39,7 @@ namespace NWS.WeatherDataService
             var observationStationsUrl = (string)json.properties.observationStations;
 
             //Load the observation stations URL from the API
-            var observationResponseText = await webClient.GetAsync(observationStationsUrl);
+            var observationResponseText = await WebClient.GetAsync(observationStationsUrl);
 
             //Parse the json response
             dynamic json2 = JObject.Parse(observationResponseText);
@@ -89,19 +82,82 @@ namespace NWS.WeatherDataService
                             station.Latitude = s.geometry.coordinates[1];
                         }
 
-                        //Attempt to get the current conditions for the station provided.
-                        response = await GetCurrentConditionsForStationAsync(station);
-                    }
-
-                    //If we have current conditions, return it. Otherwise, continue through loop.
-                    if (response != null)
-                    {
-                        break;
+                        result.Add(station);
                     }
                 }
             }
+            return result;
+        }
+    }
 
-            return response;
+
+    internal class ForecastUrlResultFactory : IResultFactory<LocationKey, string>
+    {
+        private readonly IWebClient WebClient;
+
+        public ForecastUrlResultFactory(IWebClient webClient)
+        {
+            this.WebClient = webClient;
+        }
+
+        public async Task<string> GetResult(LocationKey key)
+        {
+            var lat = key.Latitude;
+            var lng = key.Longitude;
+
+            //Get the gridpoint information for the given latitude and longitude.
+            var redirectResponseText = await WebClient.GetAsync($"https://api.weather.gov/points/{lat.ToString("0.####")},{lng.ToString("0.####")}");
+
+            //Parse the json response
+            dynamic json = JObject.Parse(redirectResponseText);
+
+            //Get the forecast Url from the response
+            var forecastUrl = (string)json.properties.forecast;
+
+            return forecastUrl;
+        }
+    }
+
+    /// <summary>
+    /// Gets weather data from the National Weather Service (api.weather.gov)
+    /// </summary>
+    public class WeatherDataService : IWeatherDataProvider
+    {
+        readonly IWebClient webClient;
+
+        private ResultCache<LocationKey, IEnumerable<WeatherStation>> weatherStationCache = null;
+
+        private ResultCache<LocationKey, string> forecastUrlCache = null;
+
+        public WeatherDataService(IWebClient webClient)
+        {
+            this.webClient = webClient;
+            weatherStationCache = new ResultCache<LocationKey, IEnumerable<WeatherStation>>(new WeatherStationResultFactory(webClient));
+            forecastUrlCache = new ResultCache<LocationKey, string>(new ForecastUrlResultFactory(webClient));
+        }
+
+
+
+        /// <summary>
+        /// Gets the current weather conditions for a given latitude and longitude
+        /// </summary>
+        /// <param name="lat">Latitude</param>
+        /// <param name="lng">Longitude</param>
+        /// <returns>A CurrentConditionsResponse containing current weather data conditions.</returns>
+        public async Task<CurrentConditionsResponse> GetCurrentConditionsAsync(decimal lat, decimal lng)
+        {
+            var stations = await weatherStationCache.Get(new LocationKey() { Latitude = lat, Longitude = lng });
+
+            foreach (var station in stations)
+            {
+                var response = await GetCurrentConditionsForStationAsync(station);
+                if (response != null)
+                {
+                    return response;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -112,51 +168,16 @@ namespace NWS.WeatherDataService
         /// <returns>A ForecastResponse containing forecast data for the given latitude and longitude</returns>
         public async Task<ForecastResponse> GetForecastAsync(decimal lat, decimal lng)
         {
-            //Get the gridpoint information for the given latitude and longitude.
-            var redirectResponseText = await webClient.GetAsync($"https://api.weather.gov/points/{ lat.ToString("0.####") },{ lng.ToString("0.####") }");
-
-            //Parse the json response
-            dynamic json = JObject.Parse(redirectResponseText);
-
-            //Get the forecast Url from the response
-            var forecastUrl = (string)json.properties.forecast;
+            //Get the forecast Url for the given latitude and longitude
+            var forecastUrl = await forecastUrlCache.Get(new LocationKey() { Latitude = lat, Longitude = lng });
 
             //Load the forecast Url
             var forecastResponseText = await webClient.GetAsync(forecastUrl);
 
-            //Parse the json response
-            dynamic json2 = JObject.Parse(forecastResponseText);
-
-            //Instantiate a new ForecastResponse object and fill it with the data received
-            var response = new ForecastResponse()
-            {
-                Periods = new List<ForecastPeriod>(),
-                ElevationInMeters = json2.properties.elevation.value,
-                LastUpdatedDate = json2.properties.updateTime,
-                Latitude = lat,
-                Longitude = lng
-            };
-
-            foreach (dynamic p in json2.properties.periods)
-            {
-                response.Periods.Add(new ForecastPeriod()
-                {
-                    Name = p.name,
-                    StartTime = p.startTime,
-                    EndTime = p.endTime,
-                    IsDayTime = p.isDaytime,
-                    TemperatureInFahrenheit = p.temperature,
-                    WindSpeed = p.windSpeed,
-                    WindDirection = p.windDirection,
-                    ForecastShort = p.shortForecast,
-                    ForecastLong = p.detailedForecast
-                });
-            }
-
-            response.RawData = forecastResponseText;
-
-            return response;
+            return ParseForecastResponse(forecastResponseText, lat, lng);
         }
+
+
 
         /// <summary>
         /// Retrieves the closest weather station for the given latitude and longitude coordinates
@@ -250,7 +271,7 @@ namespace NWS.WeatherDataService
             if (station != null)
             {
                 //Get the current observations for the provided weather station
-                var observationsText = await webClient.GetAsync($"https://api.weather.gov/stations/{ station.StationIdentifier }/observations/latest");
+                var observationsText = await webClient.GetAsync($"https://api.weather.gov/stations/{station.StationIdentifier}/observations/latest");
 
                 //Parse the json response
                 dynamic json = JObject.Parse(observationsText);
@@ -333,6 +354,50 @@ namespace NWS.WeatherDataService
             }
 
             return result;
+        }
+
+
+        /// <summary>
+        /// Parses the forecast response from the NWS API into a ForecastResponse object
+        /// </summary>
+        /// <param name="forecastResponseText">The raw JSON response from the NWS API</param>
+        /// <param name="lat">The latitude for the forecast</param>
+        /// <param name="lng">The longitude for the forecast</param>
+        /// <returns>A ForecastResponse object populated with the forecast data</returns>
+        private ForecastResponse ParseForecastResponse(string forecastResponseText, decimal lat, decimal lng)
+        {
+            //Parse the json response
+            dynamic json2 = JObject.Parse(forecastResponseText);
+
+            //Instantiate a new ForecastResponse object and fill it with the data received
+            var response = new ForecastResponse()
+            {
+                Periods = new List<ForecastPeriod>(),
+                ElevationInMeters = json2.properties.elevation.value,
+                LastUpdatedDate = json2.properties.updateTime,
+                Latitude = lat,
+                Longitude = lng
+            };
+
+            foreach (dynamic p in json2.properties.periods)
+            {
+                response.Periods.Add(new ForecastPeriod()
+                {
+                    Name = p.name,
+                    StartTime = p.startTime,
+                    EndTime = p.endTime,
+                    IsDayTime = p.isDaytime,
+                    TemperatureInFahrenheit = p.temperature,
+                    WindSpeed = p.windSpeed,
+                    WindDirection = p.windDirection,
+                    ForecastShort = p.shortForecast,
+                    ForecastLong = p.detailedForecast
+                });
+            }
+
+            response.RawData = forecastResponseText;
+
+            return response;
         }
     }
 }
